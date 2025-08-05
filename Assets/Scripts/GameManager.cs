@@ -80,11 +80,13 @@ public class GameManager : MonoBehaviour
 
         if (firstCard.cardId == secondCard.cardId)
         {
+            // Play win sound
             if (audioSource && winSound)
                 audioSource.PlayOneShot(winSound);
 
-            Destroy(firstCard.gameObject);
-            Destroy(secondCard.gameObject);
+            // Play match animation
+            firstCard.PlayMatchAnimation();
+            secondCard.PlayMatchAnimation();
 
             score++;
             matchedPairs++;
@@ -95,18 +97,27 @@ public class GameManager : MonoBehaviour
                 PlayerPrefs.SetInt("BestScore", bestScore);
             }
 
-           
+            // Wait for animation before continue
+            yield return new WaitForSeconds(0.5f);
+
             if (matchedPairs >= totalPairs)
             {
                 Debug.Log("All cards matched. Loading next scene...");
-                yield return new WaitForSeconds(1f); 
+                yield return new WaitForSeconds(1f);
                 LoadNextScene();
             }
         }
         else
         {
+            // Play error sound
             if (audioSource && errorSound)
                 audioSource.PlayOneShot(errorSound);
+
+            // Play shake animation
+            firstCard.PlayMismatchAnimation();
+            secondCard.PlayMismatchAnimation();
+
+            yield return new WaitForSeconds(0.5f); 
 
             firstCard.FlipClose();
             secondCard.FlipClose();
